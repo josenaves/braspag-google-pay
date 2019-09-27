@@ -14,6 +14,8 @@ import kotlin.math.roundToLong
 // MerchantId: fecd2b61-3f0e-4e49-8b4f-eb382fa4da56 (SANDBOX)
 // MerchantKey = WSCIKUJBVHFPPPAWFPJGRYXRDNGQTMZAGBJSZZBV (sandbox)
 
+const val RESULT_ERROR = 1
+
 class BraspagGooglePay(
     private val merchantId: String,
     private val merchantName: String,
@@ -107,4 +109,11 @@ class BraspagGooglePay(
         return PaymentReturnInfo("xx", "yyy")
     }
 
+    fun getStatusFromIntent(intent: Intent): Int {
+
+        AutoResolveHelper.getStatusFromIntent(intent)?.let {
+            return it.statusCode
+        } ?: return 0
+
+    }
 }

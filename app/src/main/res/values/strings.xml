@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">BraspagGooglePay</string>
+    <string name="button_gpay">Pay with Google Pay</string>
 </resources>
