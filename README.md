@@ -33,6 +33,45 @@ Sendo assim, na pasta ***libs*** do app cliente teremos:
 
 ## Utilização
 
+Para utilizar o SDK, é necessário alterar o ***AndroidManifest.xml*** para incluir esses metadados:
+
+```
+<meta-data
+    android:name="com.google.android.gms.wallet.api.enabled"
+    android:value="true" />
+```
+
+O ***AndroidManifest.xml*** do app fica assim:
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="br.com.braspag.googlepay.sample">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.wallet.api.enabled"
+            android:value="true" />
+
+    </application>
+
+</manifest>
+```
+
 Para utilizar o SDK, é necessário importar os pacotes:
 
 ```
@@ -41,16 +80,22 @@ import br.com.braspag.googlepay.Environment
 import br.com.braspag.googlepay.TransactionResult
 ```
 
-e instanciá-lo
+Para instanciar o SDK
 
 ```
-sdk= BraspagGooglePay(
+sdk = BraspagGooglePay(
     merchantId = MERCHANT_ID,
     merchantName = "Lojão das Fábricas",
     environment = Environment.SANDBOX,
     activity = this,
     dataRequestCode = REQUEST_CODE
 )
+```
+
+Atenção especial para a constante `REQUEST_CODE`
+ 
+```
+const val REQUEST_CODE = 666
 ```
 
 Feito isso, é necessário verificar se o Google Pay está disponível no device do usuário.
@@ -79,7 +124,7 @@ Após isso, é necessário tratar o retorno através do método
 ```
 override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
-    
+
     when (requestCode) {
 
         REQUEST_CODE -> {
@@ -89,24 +134,32 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
                     data?.let { intent ->
                         val paymentInfo = sdk.getDataFromIntent(intent)
 
-                        // TODO continue authorization flow
+                        Log.i(TAG, "paymentInfo: $paymentInfo")
+
+                        //  continue authorization flow
                     }
 
                 TransactionResult.USER_CANCELED.value -> {
                     // Nothing to do here normally - the user simply cancelled without selecting
                     // a payment method.
+
+                    Toast.makeText(this, "Usuário cancelou pagamento!", Toast.LENGTH_LONG)
+                        .show()
                 }
 
                 TransactionResult.ERROR.value -> {
                     data?.let {
                         val errorCode = sdk.getStatusFromIntent(it)
-                        // TODO display error to user
+
+                        //  display error to user
+                        Toast.makeText(this, "Erro na transação: $errorCode", Toast.LENGTH_LONG)
+                            .show()
                     }
                 }
             }
 
-            buttonGooglePay.isClickable = true
+            buttonGooglePay.isEnabled = true
         }
     }
-}}
+}
 ```
