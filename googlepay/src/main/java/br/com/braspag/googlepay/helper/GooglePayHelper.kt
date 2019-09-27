@@ -1,5 +1,6 @@
 package br.com.braspag.googlepay.helper
 
+import android.util.Log
 import br.com.braspag.googlepay.data.InternalConstants
 import br.com.braspag.googlepay.data.InternalConstants.COUNTRY_CODE
 import br.com.braspag.googlepay.data.InternalConstants.CURRENCY_CODE
@@ -11,6 +12,10 @@ import java.math.BigDecimal
 val MICROS = BigDecimal(1000000.0)
 
 internal class GooglePayHelper {
+
+    companion object {
+        const val TAG = "GooglePayHelper"
+    }
 
     private val baseRequest = JSONObject().apply {
         put("apiVersion", 2)
@@ -38,12 +43,13 @@ internal class GooglePayHelper {
                 // PaymentDataRequest JSON object.
                 val shippingAddressParameters = JSONObject().apply {
                     put("phoneNumberRequired", phoneNumberRequired)
-                    put("allowedCountryCodes", JSONArray(COUNTRY_CODE))
+                    put("allowedCountryCodes", JSONArray(listOf(COUNTRY_CODE)))
                 }
                 put("shippingAddressRequired", shippingAddressRequired)
                 put("shippingAddressParameters", shippingAddressParameters)
             }
         } catch (e: JSONException) {
+            Log.w(TAG, "Error - $e")
             return null
         }
     }

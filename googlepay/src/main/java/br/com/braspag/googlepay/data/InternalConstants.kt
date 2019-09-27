@@ -16,6 +16,5 @@ internal object InternalConstants {
 
     const val CURRENCY_CODE = "BRL"
 
-    val SUPPORTED_AUTH_METHODS = listOf("CRYPTOGRAM_3DS")
-
+    val SUPPORTED_AUTH_METHODS = listOf("CRYPTOGRAM_3DS", "PAN_ONLY") // TODO why we must use PAN_ONLY besides CRYPTOGRAM_3DS
 }

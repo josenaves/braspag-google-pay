@@ -1,6 +1,7 @@
 package br.com.braspag.googlepay
 
 import android.app.Activity
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.util.Log
 import br.com.braspag.googlepay.common.microsToString
@@ -9,6 +10,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.*
 import com.google.android.gms.wallet.WalletConstants.ENVIRONMENT_PRODUCTION
 import com.google.android.gms.wallet.WalletConstants.ENVIRONMENT_TEST
+import org.json.JSONObject
 import kotlin.math.roundToLong
 
 // MerchantId: fecd2b61-3f0e-4e49-8b4f-eb382fa4da56 (SANDBOX)
@@ -20,7 +22,7 @@ class BraspagGooglePay(
     private val merchantId: String,
     private val merchantName: String,
 
-    private val billingAddressRequired: Boolean = false,
+    private val billingAddressRequired: Boolean = true,
     private val shippingAddressRequired: Boolean = false,
     private val phoneNumberRequired: Boolean = false,
 
@@ -28,6 +30,11 @@ class BraspagGooglePay(
     private val activity: Activity,
     private val dataRequestCode: Int = 999
 ) {
+
+    companion object {
+        const val TAG = "BraspagGooglePay"
+    }
+
     private val googlePayHelper = GooglePayHelper()
 
     private lateinit var client: PaymentsClient
@@ -48,30 +55,35 @@ class BraspagGooglePay(
     }
 
     fun isGooglePayAvailable(callback: (Boolean) -> Unit) {
-        val json =
-            googlePayHelper.isReadyToPayRequest(billingAddressRequired) ?: callback.invoke(false)
-        val request = IsReadyToPayRequest.fromJson(json.toString())
 
-        // The call to isReadyToPay is asynchronous and returns a Task. We need to provide an
-        // OnCompleteListener to be triggered when the result of the call is known.
-        val task = client.isReadyToPay(request)
-        task.addOnCompleteListener { completedTask ->
-            try {
-                if (completedTask.isSuccessful) {
-                    callback.invoke(true)
-                } else {
+        val json = googlePayHelper.isReadyToPayRequest(billingAddressRequired)
+        json?.let {
+
+            Log.d(TAG, "isReadyToPayRequest JSON: [$it]")
+            val request = IsReadyToPayRequest.fromJson(it.toString())
+
+            val task = client.isReadyToPay(request)
+
+            task.addOnCompleteListener { completedTask ->
+                try {
+                    completedTask.getResult(ApiException::class.java)?.let { result ->
+                        Log.d(TAG, "result: [$result]")
+                        callback.invoke(result)
+                    } ?: callback.invoke(false)
+                } catch (exception: ApiException) {
+                    Log.w("isReadyToPay failed", exception)
+
+                    WalletConstants.ERROR_CODE_AUTHENTICATION_FAILURE
                     callback.invoke(false)
                 }
-            } catch (exception: ApiException) {
-                Log.w("isReadyToPay failed", exception)
-                callback.invoke(false)
             }
-        }
+        } ?: callback.invoke(false)
     }
 
     fun makeTransaction(price: Double) {
 
         val priceMicros = (price * 1000000).roundToLong().microsToString()
+
         val json = googlePayHelper.getPaymentDataRequest(
             merchantId,
             merchantName,
@@ -85,6 +97,7 @@ class BraspagGooglePay(
             Log.e("makeTransaction", "Can't fetch payment data request")
             return
         }
+
         val request = PaymentDataRequest.fromJson(json.toString())
 
         // Since loadPaymentData may show the UI asking the user to select a payment method, we use
@@ -99,21 +112,51 @@ class BraspagGooglePay(
         }
     }
 
-    fun getDataFromIntent(intent: Intent): PaymentReturnInfo {
-        val data = PaymentData.getFromIntent(intent)
-        val paymentInformation = data?.toJson()
+    fun getDataFromIntent(intent: Intent): PaymentReturnInfo? {
 
+        val paymentData = PaymentData.getFromIntent(intent)
 
-        // TODO finish this method - look at handlePaymentSuccess
+        paymentData?.let {
+            val paymentInformation = it.toJson()
 
-        return PaymentReturnInfo("xx", "yyy")
+            Log.d(TAG, "paymentInformation : $paymentInformation")
+
+            try {
+                val paymentMethodData =
+                    JSONObject(paymentInformation).getJSONObject("paymentMethodData")
+
+                val billingName = paymentMethodData
+                    .getJSONObject("info")
+                    .getJSONObject("billingAddress")
+                    .getString("name")
+
+                Log.d(TAG, "BillingName : $billingName")
+
+                val token = paymentMethodData
+                    .getJSONObject("tokenizationData")
+                    .getString("token")
+
+                Log.d(TAG, "token: $token")
+
+                val tokenObject = JSONObject(token)
+
+                val signature = tokenObject.getString("signature")
+                val signedMessage = tokenObject.getString("signedMessage")
+
+                return PaymentReturnInfo(signature, signedMessage)
+
+            } catch (e: Throwable) {
+                Log.e(TAG, "Error: $e")
+                return null
+            }
+        }
+
+        return null
     }
 
     fun getStatusFromIntent(intent: Intent): Int {
-
         AutoResolveHelper.getStatusFromIntent(intent)?.let {
             return it.statusCode
         } ?: return 0
-
     }
 }

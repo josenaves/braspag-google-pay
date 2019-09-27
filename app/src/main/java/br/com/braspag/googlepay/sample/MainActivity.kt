@@ -3,6 +3,8 @@ package br.com.braspag.googlepay.sample
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import br.com.braspag.googlepay.BraspagGooglePay
 import br.com.braspag.googlepay.Environment
 import br.com.braspag.googlepay.TransactionResult
@@ -15,6 +17,10 @@ const val MERCHANT_ID = "fecd2b61-3f0e-4e49-8b4f-eb382fa4da56"
 // MerchantKey = WSCIKUJBVHFPPPAWFPJGRYXRDNGQTMZAGBJSZZBV (sandbox)
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        const val TAG = "MainActivity"
+    }
 
     lateinit var sdk: BraspagGooglePay
 
@@ -30,13 +36,18 @@ class MainActivity : AppCompatActivity() {
             dataRequestCode = REQUEST_CODE
         )
 
-        sdk.isGooglePayAvailable {
-            buttonGooglePay.isEnabled = it
-        }
-
         buttonGooglePay.setOnClickListener {
             buttonGooglePay.isEnabled = false
             sdk.makeTransaction(100.00)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        sdk.isGooglePayAvailable {
+            Log.i(TAG, "Is google pay available? $it")
+            buttonGooglePay.isEnabled = it
         }
     }
 
@@ -52,23 +63,31 @@ class MainActivity : AppCompatActivity() {
                         data?.let { intent ->
                             val paymentInfo = sdk.getDataFromIntent(intent)
 
-                            // TODO continue authorization flow
+                            Log.i(TAG, "paymentInfo: $paymentInfo")
+
+                            //  continue authorization flow
                         }
 
                     TransactionResult.USER_CANCELED.value -> {
                         // Nothing to do here normally - the user simply cancelled without selecting
                         // a payment method.
+
+                        Toast.makeText(this, "Usuário cancelou pagamento!", Toast.LENGTH_LONG)
+                            .show()
                     }
 
                     TransactionResult.ERROR.value -> {
                         data?.let {
                             val errorCode = sdk.getStatusFromIntent(it)
-                            // TODO display error to user
+
+                            //  display error to user
+                            Toast.makeText(this, "Erro na transação: $errorCode", Toast.LENGTH_LONG)
+                                .show()
                         }
                     }
                 }
 
-                buttonGooglePay.isClickable = true
+                buttonGooglePay.isEnabled = true
             }
         }
     }
