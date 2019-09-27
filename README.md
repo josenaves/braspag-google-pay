@@ -51,7 +51,6 @@ sdk= BraspagGooglePay(
     activity = this,
     dataRequestCode = REQUEST_CODE
 )
-
 ```
 
 Feito isso, é necessário verificar se o Google Pay está disponível no device do usuário.
@@ -78,36 +77,36 @@ O método *`makeTransaction`* irá exibir uma activity do Google Pay.
 Após isso, é necessário tratar o retorno através do método
 
 ```
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        
-        when (requestCode) {
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+    
+    when (requestCode) {
 
-            REQUEST_CODE -> {
-                when (resultCode) {
+        REQUEST_CODE -> {
+            when (resultCode) {
 
-                    TransactionResult.SUCCESS.value ->
-                        data?.let { intent ->
-                            val paymentInfo = sdk.getDataFromIntent(intent)
+                TransactionResult.SUCCESS.value ->
+                    data?.let { intent ->
+                        val paymentInfo = sdk.getDataFromIntent(intent)
 
-                            // TODO continue authorization flow
-                        }
-
-                    TransactionResult.USER_CANCELED.value -> {
-                        // Nothing to do here normally - the user simply cancelled without selecting
-                        // a payment method.
+                        // TODO continue authorization flow
                     }
 
-                    TransactionResult.ERROR.value -> {
-                        data?.let {
-                            val errorCode = sdk.getStatusFromIntent(it)
-                            // TODO display error to user
-                        }
-                    }
+                TransactionResult.USER_CANCELED.value -> {
+                    // Nothing to do here normally - the user simply cancelled without selecting
+                    // a payment method.
                 }
 
-                buttonGooglePay.isClickable = true
+                TransactionResult.ERROR.value -> {
+                    data?.let {
+                        val errorCode = sdk.getStatusFromIntent(it)
+                        // TODO display error to user
+                    }
+                }
             }
+
+            buttonGooglePay.isClickable = true
         }
-    }}
+    }
+}}
 ```
