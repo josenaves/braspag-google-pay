@@ -1,2 +1,2 @@
 include ':app', ':googlepay'
-rootProject.name='BraspagGooglePay'
+rootProject.name='braspag-google-pay'

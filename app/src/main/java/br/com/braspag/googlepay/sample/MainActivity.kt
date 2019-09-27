@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import br.com.braspag.googlepay.BraspagGooglePay
 import br.com.braspag.googlepay.Environment
+import br.com.braspag.googlepay.TransactionResult
+import kotlinx.android.synthetic.main.activity_main.*
 
 const val REQUEST_CODE = 666
 const val MERCHANT_ID = "fecd2b61-3f0e-4e49-8b4f-eb382fa4da56"
@@ -27,9 +29,47 @@ class MainActivity : AppCompatActivity() {
             activity = this,
             dataRequestCode = REQUEST_CODE
         )
+
+        sdk.isGooglePayAvailable {
+            buttonGooglePay.isEnabled = it
+        }
+
+        buttonGooglePay.setOnClickListener {
+            buttonGooglePay.isEnabled = false
+            sdk.makeTransaction(100.00)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        sdk.getDataFromIntent(intent!!)
+        super.onActivityResult(requestCode, resultCode, data)
+
+        when (requestCode) {
+
+            REQUEST_CODE -> {
+                when (resultCode) {
+
+                    TransactionResult.SUCCESS.value ->
+                        data?.let { intent ->
+                            val paymentInfo = sdk.getDataFromIntent(intent)
+
+                            // TODO continue authorization flow
+                        }
+
+                    TransactionResult.USER_CANCELED.value -> {
+                        // Nothing to do here normally - the user simply cancelled without selecting
+                        // a payment method.
+                    }
+
+                    TransactionResult.ERROR.value -> {
+                        data?.let {
+                            val errorCode = sdk.getStatusFromIntent(it)
+                            // TODO display error to user
+                        }
+                    }
+                }
+
+                buttonGooglePay.isClickable = true
+            }
+        }
     }
 }
