@@ -20,6 +20,9 @@ Primeiramente, deve ser alterado o app/build.gradle do cliente para carregar dep
 
 ```
 implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+implementation ('com.google.android.gms:play-services-wallet:18.0.0') {
+    exclude module: 'core'
+}
 ```
 
 De posse do **AAR**'s, coloque-o na pasta ***libs*** do projeto cliente.

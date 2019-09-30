@@ -32,6 +32,9 @@ class MainActivity : AppCompatActivity() {
             merchantId = MERCHANT_ID,
             merchantName = "Lojão das Fábricas",
             environment = Environment.SANDBOX,
+            billingAddressRequired = true,
+            shippingAddressRequired = true,
+            phoneNumberRequired = true,
             activity = this,
             dataRequestCode = REQUEST_CODE
         )

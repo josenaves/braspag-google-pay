@@ -1,10 +1,11 @@
 package br.com.braspag.googlepay
 
 import android.app.Activity
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.util.Log
 import br.com.braspag.googlepay.common.microsToString
+import br.com.braspag.googlepay.common.toBillingAddress
+import br.com.braspag.googlepay.common.toShippingAddress
 import br.com.braspag.googlepay.helper.GooglePayHelper
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.*
@@ -125,10 +126,24 @@ class BraspagGooglePay(
                 val paymentMethodData =
                     JSONObject(paymentInformation).getJSONObject("paymentMethodData")
 
-                val billingName = paymentMethodData
-                    .getJSONObject("info")
-                    .getJSONObject("billingAddress")
-                    .getString("name")
+                var shippingAddress: JSONObject? = null
+                if (JSONObject(paymentInformation).has("shippingAddress")) {
+                    shippingAddress =
+                        JSONObject(paymentInformation).getJSONObject("shippingAddress")
+                }
+
+                var billingAddress: JSONObject? = null
+                if (paymentMethodData
+                        .getJSONObject("info")
+                        .has("billingAddress")
+                ) {
+                    billingAddress =
+                        paymentMethodData
+                            .getJSONObject("info")
+                            .getJSONObject("billingAddress")
+                }
+
+                val billingName = billingAddress?.getString("name")
 
                 Log.d(TAG, "BillingName : $billingName")
 
@@ -137,13 +152,20 @@ class BraspagGooglePay(
                     .getString("token")
 
                 Log.d(TAG, "token: $token")
+                Log.d(TAG, "billingAddress: $billingAddress")
+                Log.d(TAG, "shippingAddress: $shippingAddress")
 
                 val tokenObject = JSONObject(token)
 
                 val signature = tokenObject.getString("signature")
                 val signedMessage = tokenObject.getString("signedMessage")
 
-                return PaymentReturnInfo(signature, signedMessage)
+                return PaymentReturnInfo(
+                    signature,
+                    signedMessage,
+                    billingAddress = billingAddress?.toBillingAddress(),
+                    shippingAddress = shippingAddress?.toShippingAddress()
+                )
 
             } catch (e: Throwable) {
                 Log.e(TAG, "Error: $e")
