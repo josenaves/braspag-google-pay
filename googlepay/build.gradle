@@ -5,15 +5,18 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'org.jetbrains.dokka-android'
 apply plugin: 'maven-publish'
 
+ext {
+    libraryVersion="1.0.3"
+}
+
 android {
     compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0.2"
-
+        versionCode 2
+        versionName libraryVersion
         archivesBaseName = "braspag-google-pay-$versionName"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
