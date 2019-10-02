@@ -7,7 +7,7 @@ ext {
     // implementation '<groupId>:<artifactId>:<libVersion>'
     groupId = 'br.com.braspag'
     artifactId = "braspag-google-pay"
-    libVersion = "0.0.1"
+    libVersion = "1.0.2"
 }
 
 version = libVersion
