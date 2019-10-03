@@ -65,4 +65,4 @@ fastlane/test_output
 fastlane/readme.md
 
 # bintray
-keystore.gradleg
+keystore.gradle
