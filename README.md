@@ -1,42 +1,58 @@
 # Braspag Google Pay SDK
 
-## Objetivo
-
-
 ## Build
 
-Para compilar uma versão, basta ir até o terminal e digitar
+Para compilar o SDK, basta ir até o terminal e digitar:
  
  ```
- ./gradlew clean assemble
+ ./gradlew :googlepay:clean :googlepay:assembleRelease
  ```
 
-O arquivo AAR estará disponível no diretório `./googlepay/build/outputs/aar`
+O arquivo AAR (`braspag-gogole-pay-release.aar`) estará disponível no diretório `./googlepay/build/outputs/aar`
 
 
-## Instalação (apps clientes)
+## Publicação no JCenter (Bintray)
 
-Primeiramente, deve ser alterado o app/build.gradle do cliente para carregar dependências aar localizadas na pasta libs.
+Será necessário criar o arquivo `keystore.gradle` na pasta `googlepay`.
+Neste arquivo ficam armazenados o usuário do Bintray e a API key:
 
 ```
-implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-implementation ('com.google.android.gms:play-services-wallet:18.0.0') {
-    exclude module: 'core'
+ext {
+    bintray_user = 'usuario_bintray'
+    bintray_key = 'exxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 }
 ```
 
-De posse do **AAR**'s, coloque-o na pasta ***libs*** do projeto cliente.
+Estes dados são sensíveis e não devem ser versionados!
 
-Não é mais necessário colocar a dependência da Cardinal.
+Para incrementar a versão da biblioteca, edite o arquivo `build.gradle` localizado na pasta `googlepay`:
 
-Sendo assim, na pasta ***libs*** do app cliente teremos:
+```
+ext {
+    libraryVersion = '1.0.0'
+}
+```
 
-- braspag-google-pay-1.0.0-debug.aar (ou braspag-google-pay-1.0.0-release.aar)
+Altere a variável `libraryVersion` para refletir a nova versão.
 
+Edite também no mesmo arquivo o campo `versionCode` (basta incrementar o valor).
 
-## Utilização
+Feito isso, para publicar uma nova versão, basta ir até o terminal e digitar:
 
-Para utilizar o SDK, é necessário alterar o ***AndroidManifest.xml*** para incluir esses metadados:
+ ```
+ ./gradlew :googlepay:bintrayUpload
+ ```
+
+## Utilização em app clientes
+
+Primeiramente, deve ser alterado o `app/build.gradle` do cliente para adicionar as novas dependências:
+
+```
+implementation 'com.google.android.gms:play-services-wallet:18.0.0'
+implementation 'br.com.braspag:braspag-google-pay:1.0.0'
+```
+
+Para utilizar o SDK, é necessário alterar o ***AndroidManifest.xml*** para incluir o seguinte metadado:
 
 ```
 <meta-data
@@ -83,7 +99,7 @@ import br.com.braspag.googlepay.Environment
 import br.com.braspag.googlepay.TransactionResult
 ```
 
-Para instanciar o SDK
+Para instanciar o SDK:
 
 ```
 sdk = BraspagGooglePay(
