@@ -13,7 +13,6 @@ ext {
 version = libVersion
 group = groupId
 
-// https://github.com/bintray/gradle-bintray-plugin#buildgradle
 bintray {
     // defined in keystore.gradle
     user = bintray_user
