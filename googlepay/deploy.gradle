@@ -27,8 +27,10 @@ bintray {
     // The plugin will use the repo and name properties to check if the package already exists.
     // In that case, there's no need to configure the other package properties (userOrg, desc, etc)
     pkg  {
-        repo = "maven"                // bintray repo
-        name = "braspag-google-pay"   // bintray package
+        repo = 'maven'      // bintray repo
+        name = artifactId   // bintray package
+        vcsUrl = 'https://github.com/BraspagDevelopers/braspag-google-pay.git'
+        licenses = ['MIT']
         version {
             name = libVersion
         }
