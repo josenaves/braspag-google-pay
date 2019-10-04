@@ -1,6 +1,12 @@
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
-apply from: 'keystore.gradle'   // contains bintray api key
+
+if (project.file('keystore.gradle').exists()) {
+    apply from: 'keystore.gradle'   // contains bintray user and api key
+} else {
+    bintray_user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+}
 
 ext {
     // This configuration will result in:
@@ -14,9 +20,9 @@ version = libVersion
 group = groupId
 
 bintray {
-    // defined in keystore.gradle
-    user = bintray_user ? System.getenv('BINTRAY_USER') : bintray_user
-    key = bintray_key ? System.getenv('BINTRAY_KEY') : bintray_key
+    // defined in keystore.gradle or ENV
+    user = bintray_user
+    key = bintray_key
 
     configurations = ['archives']
     publish = true   // Whether version should be auto published after an upload (default: false)
