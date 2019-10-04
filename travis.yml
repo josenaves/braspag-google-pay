@@ -1,4 +1,5 @@
 language: android
+dist: trusty
 android:
   components:
     - android-28
@@ -9,8 +10,9 @@ env:
     # install timeout in minutes (2 minutes by default)
     - ADB_INSTALL_TIMEOUT=8
 
-# Run assemble and unit tests
+# Run assemble
 script:
   - ./gradlew clean assembleDebug assembleRelease
 
+# Run assemble and unit tests
 #- ./gradlew clean assembleDebug assembleRelease testDebug
