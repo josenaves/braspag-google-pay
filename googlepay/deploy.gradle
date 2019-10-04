@@ -4,8 +4,8 @@ apply plugin: 'com.jfrog.bintray'
 if (project.file('keystore.gradle').exists()) {
     apply from: 'keystore.gradle'   // contains bintray user and api key
 } else {
-    bintray_user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_KEY')
+    ext.bintray_user = System.getenv('BINTRAY_USER')
+    ext.bintray_key = System.getenv('BINTRAY_KEY')
 }
 
 ext {
