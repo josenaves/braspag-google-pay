@@ -1,6 +1,12 @@
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
-apply from: 'keystore.gradle'   // contains bintray api key
+
+if (project.file('keystore.gradle').exists()) {
+    apply from: 'keystore.gradle'   // contains bintray user and api key
+} else {
+    ext.bintray_user = System.getenv('BINTRAY_USER')
+    ext.bintray_key = System.getenv('BINTRAY_KEY')
+}
 
 ext {
     // This configuration will result in:
@@ -14,7 +20,7 @@ version = libVersion
 group = groupId
 
 bintray {
-    // defined in keystore.gradle
+    // defined in keystore.gradle or ENV
     user = bintray_user
     key = bintray_key
 
