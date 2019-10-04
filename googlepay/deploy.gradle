@@ -15,8 +15,8 @@ group = groupId
 
 bintray {
     // defined in keystore.gradle
-    user = bintray_user
-    key = bintray_key
+    user = bintray_user ? System.getenv('BINTRAY_USER') : bintray_user
+    key = bintray_key ? System.getenv('BINTRAY_KEY') : bintray_key
 
     configurations = ['archives']
     publish = true   // Whether version should be auto published after an upload (default: false)
