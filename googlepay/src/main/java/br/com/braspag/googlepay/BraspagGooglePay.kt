@@ -7,6 +7,7 @@ import br.com.braspag.googlepay.common.microsToString
 import br.com.braspag.googlepay.common.toBillingAddress
 import br.com.braspag.googlepay.common.toShippingAddress
 import br.com.braspag.googlepay.helper.GooglePayHelper
+import br.com.braspag.googlepay.helper.MILLION
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.*
 import com.google.android.gms.wallet.WalletConstants.ENVIRONMENT_PRODUCTION
@@ -83,7 +84,7 @@ class BraspagGooglePay(
 
     fun makeTransaction(price: Double) {
 
-        val priceMicros = (price * 1000000).roundToLong().microsToString()
+        val priceMicros = (price * MILLION).roundToLong().microsToString()
 
         val json = googlePayHelper.getPaymentDataRequest(
             merchantId,

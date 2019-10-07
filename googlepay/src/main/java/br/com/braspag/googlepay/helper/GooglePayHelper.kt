@@ -9,6 +9,8 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.math.BigDecimal
 
+const val MILLION : Long = 1000000
+
 val MICROS = BigDecimal(1000000.0)
 
 internal class GooglePayHelper {
