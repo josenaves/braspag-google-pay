@@ -2,13 +2,13 @@
 
 ## Build
 
-Para compilar o SDK, basta ir até o terminal e digitar:
+Para compilar o SDK, basta ir até o terminal, no diretório raiz do projeto, e digitar:
  
  ```
  ./gradlew :googlepay:clean :googlepay:assembleRelease
  ```
 
-O arquivo AAR (`braspag-gogole-pay-release.aar`) estará disponível no diretório `./googlepay/build/outputs/aar`
+O arquivo AAR (`braspag-google-pay-release.aar`) estará disponível no diretório `./googlepay/build/outputs/aar`
 
 
 ## Publicação no JCenter (Bintray)
@@ -24,6 +24,13 @@ ext {
 ```
 
 Estes dados são sensíveis e não devem ser versionados!
+
+## Continuous Integration com Travis
+
+O projeto está configurado para integração contínua no Travis e as seguintes variáveis de ambiente  - `BINTRAY_USER` e `BINTRAY_KEY` - devem estar definidas.
+
+
+## Gerando uma nova versão
 
 Para incrementar a versão da biblioteca, edite o arquivo `build.gradle` localizado na pasta `googlepay`:
 
