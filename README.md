@@ -139,13 +139,13 @@ Após isso, é possível fazer uma transação:
 
 ```
 buttonGooglePay.setOnClickListener {
-    sdk.makeTransaction(100.00)
+    sdk.makeTransaction(100.00)  // preço total em reais
 }
 ```
 
 O método *`makeTransaction`* irá exibir uma activity do Google Pay.
 
-Após isso, é necessário tratar o retorno através do método
+Após isso, é necessário tratar o retorno através do método `onActivityResult`:
 
 ```
 override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
