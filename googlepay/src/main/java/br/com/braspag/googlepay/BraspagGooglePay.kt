@@ -31,7 +31,7 @@ class BraspagGooglePay(
 
     private val environment: Environment,
     private val activity: Activity,
-    private val dataRequestCode: Int = 999
+    private val dataRequestCode: Int
 ) {
 
     private val googlePayHelper = GooglePayHelper()
