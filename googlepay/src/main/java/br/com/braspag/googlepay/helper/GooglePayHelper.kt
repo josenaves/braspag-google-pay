@@ -1,6 +1,6 @@
 package br.com.braspag.googlepay.helper
 
-import android.util.Log
+import br.com.braspag.googlepay.common.logw
 import br.com.braspag.googlepay.data.InternalConstants
 import br.com.braspag.googlepay.data.InternalConstants.COUNTRY_CODE
 import br.com.braspag.googlepay.data.InternalConstants.CURRENCY_CODE
@@ -51,7 +51,7 @@ internal class GooglePayHelper {
                 put("shippingAddressParameters", shippingAddressParameters)
             }
         } catch (e: JSONException) {
-            Log.w(TAG, "Error - $e")
+            logw("Error - $e")
             return null
         }
     }
@@ -65,6 +65,7 @@ internal class GooglePayHelper {
             )
             isReadyToPayRequest
         } catch (e: JSONException) {
+            logw("Error - $e")
             null
         }
     }
@@ -120,6 +121,4 @@ internal class GooglePayHelper {
             put("currencyCode", CURRENCY_CODE)
         }
     }
-
-
 }

@@ -46,6 +46,9 @@ dependencies {
     // Dependencies for local unit tests
     testImplementation "junit:junit:4.12"
 
+    // Truth (for assertions)
+    testImplementation "com.google.truth:truth:1.0"
+
     // Dependencies for Android unit tests
     androidTestImplementation "junit:junit:4.12"
 
