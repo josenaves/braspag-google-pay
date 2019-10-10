@@ -18,11 +18,11 @@ const val MERCHANT_ID = "fecd2b61-3f0e-4e49-8b4f-eb382fa4da56"
 
 class MainActivity : AppCompatActivity() {
 
-    companion object {
+    private companion object {
         const val TAG = "MainActivity"
     }
 
-    lateinit var sdk: BraspagGooglePay
+    private lateinit var sdk: BraspagGooglePay
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

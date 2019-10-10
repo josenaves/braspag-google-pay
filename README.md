@@ -2,15 +2,36 @@
 
 ## Build
 
-Para compilar o SDK, basta ir até o terminal e digitar:
+Para compilar o SDK, basta ir até o terminal, no diretório raiz do projeto, e digitar:
  
  ```
  ./gradlew :googlepay:clean :googlepay:assembleRelease
  ```
 
-O arquivo AAR (`braspag-gogole-pay-release.aar`) estará disponível no diretório `./googlepay/build/outputs/aar`
+O arquivo AAR (`braspag-google-pay-release.aar`) estará disponível no diretório `./googlepay/build/outputs/aar`
 
 
+## Continuous Integration com Travis
+
+O projeto está configurado para integração contínua no Travis e as seguintes variáveis de ambiente  - `BINTRAY_USER` e `BINTRAY_KEY` - devem estar definidas.
+
+
+## Gerando uma nova versão
+
+Para incrementar a versão da biblioteca, edite o arquivo `build.gradle` localizado na pasta `googlepay`:
+
+```
+ext {
+    libraryVersion = '1.0.0'
+}
+```
+
+Altere a variável `libraryVersion` para refletir a nova versão.
+
+Edite também no mesmo arquivo o campo `versionCode` (basta incrementar o valor).
+
+Com isso, você pode publicar essa nova versão no JCenter
+ 
 ## Publicação no JCenter (Bintray)
 
 Será necessário criar o arquivo `keystore.gradle` na pasta `googlepay`.
@@ -25,23 +46,12 @@ ext {
 
 Estes dados são sensíveis e não devem ser versionados!
 
-Para incrementar a versão da biblioteca, edite o arquivo `build.gradle` localizado na pasta `googlepay`:
+Para publicar uma nova versão no JCenter, basta executar o seguinte comando:
 
 ```
-ext {
-    libraryVersion = '1.0.0'
-}
+./gradlew :googlepay:bintrayUpload
 ```
 
-Altere a variável `libraryVersion` para refletir a nova versão.
-
-Edite também no mesmo arquivo o campo `versionCode` (basta incrementar o valor).
-
-Feito isso, para publicar uma nova versão, basta ir até o terminal e digitar:
-
- ```
- ./gradlew :googlepay:bintrayUpload
- ```
 
 ## Utilização em app clientes
 
@@ -132,13 +142,13 @@ Após isso, é possível fazer uma transação:
 
 ```
 buttonGooglePay.setOnClickListener {
-    sdk.makeTransaction(100.00)
+    sdk.makeTransaction(100.00)  // preço total em reais
 }
 ```
 
-O método *`makeTransaction`* irá exibir uma activity do Google Pay.
+O método *`makeTransaction`* irá exibir uma activity do `Google Pay`.
 
-Após isso, é necessário tratar o retorno através do método
+Após isso, é necessário tratar o retorno através do método `onActivityResult`:
 
 ```
 override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -182,3 +192,9 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
     }
 }
 ```
+
+Para funcionar de acordo, o SDK deve ser utilizado em ambientes (emulador ou dispositivo real) onde exista uma conta de usuário Google ativa.
+
+Caso contrário, na chamada do método *`makeTransaction`*, uma `dialogBox` como a seguir será exibida. O retorno nesse cenário será `TransactionResult.USER_CANCELED`.
+
+![Conta Google não definida](images/no-account.png?raw=true)

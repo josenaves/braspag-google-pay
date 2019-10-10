@@ -3,10 +3,12 @@ package br.com.braspag.googlepay
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
+import br.com.braspag.googlepay.common.*
 import br.com.braspag.googlepay.common.microsToString
 import br.com.braspag.googlepay.common.toBillingAddress
 import br.com.braspag.googlepay.common.toShippingAddress
 import br.com.braspag.googlepay.helper.GooglePayHelper
+import br.com.braspag.googlepay.helper.MILLION
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.*
 import com.google.android.gms.wallet.WalletConstants.ENVIRONMENT_PRODUCTION
@@ -29,12 +31,8 @@ class BraspagGooglePay(
 
     private val environment: Environment,
     private val activity: Activity,
-    private val dataRequestCode: Int = 999
+    private val dataRequestCode: Int
 ) {
-
-    companion object {
-        const val TAG = "BraspagGooglePay"
-    }
 
     private val googlePayHelper = GooglePayHelper()
 
@@ -60,7 +58,8 @@ class BraspagGooglePay(
         val json = googlePayHelper.isReadyToPayRequest(billingAddressRequired)
         json?.let {
 
-            Log.d(TAG, "isReadyToPayRequest JSON: [$it]")
+
+            logd("isReadyToPayRequest JSON: [$it]")
             val request = IsReadyToPayRequest.fromJson(it.toString())
 
             val task = client.isReadyToPay(request)
@@ -68,7 +67,7 @@ class BraspagGooglePay(
             task.addOnCompleteListener { completedTask ->
                 try {
                     completedTask.getResult(ApiException::class.java)?.let { result ->
-                        Log.d(TAG, "result: [$result]")
+                        logd("result: [$result]")
                         callback.invoke(result)
                     } ?: callback.invoke(false)
                 } catch (exception: ApiException) {
@@ -83,7 +82,7 @@ class BraspagGooglePay(
 
     fun makeTransaction(price: Double) {
 
-        val priceMicros = (price * 1000000).roundToLong().microsToString()
+        val priceMicros = (price * MILLION).roundToLong().microsToString()
 
         val json = googlePayHelper.getPaymentDataRequest(
             merchantId,
@@ -95,7 +94,7 @@ class BraspagGooglePay(
         )
 
         if (json == null) {
-            Log.e("makeTransaction", "Can't fetch payment data request")
+            loge("Can't fetch payment data request")
             return
         }
 
@@ -120,7 +119,7 @@ class BraspagGooglePay(
         paymentData?.let {
             val paymentInformation = it.toJson()
 
-            Log.d(TAG, "paymentInformation : $paymentInformation")
+            logd( "paymentInformation : $paymentInformation")
 
             try {
                 val paymentMethodData =
@@ -145,15 +144,15 @@ class BraspagGooglePay(
 
                 val billingName = billingAddress?.getString("name")
 
-                Log.d(TAG, "BillingName : $billingName")
+                logd("BillingName : $billingName")
 
                 val token = paymentMethodData
                     .getJSONObject("tokenizationData")
                     .getString("token")
 
-                Log.d(TAG, "token: $token")
-                Log.d(TAG, "billingAddress: $billingAddress")
-                Log.d(TAG, "shippingAddress: $shippingAddress")
+                logd( "token: $token")
+                logd( "billingAddress: $billingAddress")
+                logd("shippingAddress: $shippingAddress")
 
                 val tokenObject = JSONObject(token)
 
@@ -168,7 +167,7 @@ class BraspagGooglePay(
                 )
 
             } catch (e: Throwable) {
-                Log.e(TAG, "Error: $e")
+                loge("Error: $e")
                 return null
             }
         }
