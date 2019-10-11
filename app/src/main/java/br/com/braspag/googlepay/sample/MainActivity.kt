@@ -1,13 +1,13 @@
 package br.com.braspag.googlepay.sample
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import br.com.braspag.googlepay.BraspagGooglePay
 import br.com.braspag.googlepay.Environment
 import br.com.braspag.googlepay.TransactionResult
+import br.com.braspag.googlepay.common.snack
 import kotlinx.android.synthetic.main.activity_main.*
 
 const val REQUEST_CODE = 666
@@ -40,8 +40,19 @@ class MainActivity : AppCompatActivity() {
         )
 
         buttonGooglePay.setOnClickListener {
-            buttonGooglePay.isEnabled = false
-            sdk.makeTransaction(100.00)
+            val price = editPrice.text.toString()
+            // check price
+            if (price.isBlank()) {
+                rootView.snack(getString(R.string.message_validation_empty_price))
+            } else {
+                val p = price.toDoubleOrNull()
+
+                p?.let {
+                    buttonGooglePay.isEnabled = false
+                    sdk.makeTransaction(it)
+                } ?: rootView.snack(getString(R.string.message_validation_numeric_price))
+
+            }
         }
     }
 
@@ -68,15 +79,15 @@ class MainActivity : AppCompatActivity() {
 
                             Log.i(TAG, "paymentInfo: $paymentInfo")
 
+                            rootView.snack(getString(R.string.message_transacion_success))
+
                             //  continue authorization flow
                         }
 
                     TransactionResult.USER_CANCELED.value -> {
                         // Nothing to do here normally - the user simply cancelled without selecting
                         // a payment method.
-
-                        Toast.makeText(this, "Usuário cancelou pagamento!", Toast.LENGTH_LONG)
-                            .show()
+                        rootView.snack(getString(R.string.message_user_canceled))
                     }
 
                     TransactionResult.ERROR.value -> {
@@ -84,8 +95,7 @@ class MainActivity : AppCompatActivity() {
                             val errorCode = sdk.getStatusFromIntent(it)
 
                             //  display error to user
-                            Toast.makeText(this, "Erro na transação: $errorCode", Toast.LENGTH_LONG)
-                                .show()
+                            rootView.snack(String.format(getString(R.string.message_error_transaction, errorCode)))
                         }
                     }
                 }
