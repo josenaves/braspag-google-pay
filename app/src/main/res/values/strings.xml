@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">BraspagGooglePay</string>
     <string name="button_gpay">Pay with Google Pay</string>
+    <string name="hint_price">Price</string>
+    <string name="content_description_moped">ciclomotor elétrico</string>
+    <string name="message_user_canceled">Usuário cancelou pagamento!</string>
+    <string name="message_error_transaction">Erro na transação: %d</string>
+    <string name="message_transacion_success">Sucesso na transação com GooglePay !</string>
+    <string name="message_validation_empty_price">Digite o preço !</string>
+    <string name="message_validation_numeric_price">Digite um valor numérico !</string>
 </resources>
