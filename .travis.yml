@@ -10,9 +10,11 @@ env:
     # install timeout in minutes (2 minutes by default)
     - ADB_INSTALL_TIMEOUT=8
 
-# Run assemble
-script:
-  - ./gradlew clean assembleDebug assembleRelease
-
-# Run assemble and unit tests
-#- ./gradlew clean assembleDebug assembleRelease testDebug
+# stages
+jobs:
+  include:
+    - stage: compile
+      script: ./gradlew clean assembleDebug assembleRelease
+    - stage: publish
+      if: branch = master
+      script: ./gradlew :googlepay:bintrayUpload
