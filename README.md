@@ -11,11 +11,6 @@ Para compilar o SDK, basta ir até o terminal, no diretório raiz do projeto, e 
 O arquivo AAR (`braspag-google-pay-release.aar`) estará disponível no diretório `./googlepay/build/outputs/aar`
 
 
-## Continuous Integration com Travis
-
-O projeto está configurado para integração contínua no Travis e as seguintes variáveis de ambiente  - `BINTRAY_USER` e `BINTRAY_KEY` - devem estar definidas.
-
-
 ## Gerando uma nova versão
 
 Para incrementar a versão da biblioteca, edite o arquivo `build.gradle` localizado na pasta `googlepay`:
@@ -46,12 +41,17 @@ ext {
 
 Estes dados são sensíveis e não devem ser versionados!
 
-Para publicar uma nova versão no JCenter, basta executar o seguinte comando:
+Para publicar manualmente uma nova versão no JCenter, basta executar o seguinte comando:
 
 ```
 ./gradlew :googlepay:bintrayUpload
 ```
 
+## Continuous Integration com Travis
+
+O projeto está configurado para integração contínua no Travis. As seguintes variáveis de ambiente  - `BINTRAY_USER` e `BINTRAY_KEY` - devem estar definidas no Travis.
+
+A publicação do AAR no Bintray só será feita quando o branch for o ***master***.
 
 ## Utilização em app clientes
 
