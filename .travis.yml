@@ -16,4 +16,5 @@ jobs:
     - stage: compile
       script: ./gradlew clean assembleDebug assembleRelease
     - stage: publish
+      if: branch = master
       script: ./gradlew :googlepay:bintrayUpload
