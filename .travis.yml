@@ -14,7 +14,7 @@ env:
 jobs:
   include:
     - stage: compile
-      script: ./gradlew clean assembleDebug assembleRelease
+      script: ./gradlew clean :googlepay:assembleDebug :googlepay:assembleRelease
     - stage: publish
       if: branch = master
       script: ./gradlew :googlepay:bintrayUpload
