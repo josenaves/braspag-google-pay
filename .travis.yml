@@ -10,11 +10,12 @@ env:
     # install timeout in minutes (2 minutes by default)
     - ADB_INSTALL_TIMEOUT=8
 
-# stages
-jobs:
-  include:
-    - stage: compile
-      script: ./gradlew clean :googlepay:assembleDebug :googlepay:assembleRelease
-    - stage: publish
-      if: branch = master
-      script: ./gradlew :googlepay:bintrayUpload
+script:
+  - ./gradlew clean :googlepay:assembleDebug :googlepay:assembleRelease
+
+# deploy section
+deploy:
+  provider: script
+  on:
+    branch: master
+  script: ./gradlew :googlepay:bintrayUpload
