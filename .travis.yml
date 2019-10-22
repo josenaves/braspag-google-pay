@@ -16,6 +16,6 @@ script:
 # deploy section
 deploy:
   provider: script
+  script: ./gradlew :googlepay:bintrayUpload
   on:
     branch: master
-  script: ./gradlew :googlepay:bintrayUpload
