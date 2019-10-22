@@ -6,7 +6,7 @@ apply plugin: 'org.jetbrains.dokka-android'
 apply plugin: 'maven-publish'
 
 ext {
-    libraryVersion = '0.9.1'
+    libraryVersion = '1.0.0'
 }
 
 android {
